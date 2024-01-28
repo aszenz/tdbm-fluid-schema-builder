@@ -3,7 +3,6 @@
 namespace TheCodingMachine\FluidSchema;
 
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase;
 
 class TdbmFluidColumnOptionsTest extends TestCase
@@ -39,13 +38,13 @@ class TdbmFluidColumnOptionsTest extends TestCase
         $this->assertSame(42, $dbalColumn->getDefault());
 
         $columnOptions->protectedGetter();
-        $this->assertContains('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedGetter', $dbalColumn->getComment());
+        $this->assertStringContainsString('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedGetter', $dbalColumn->getComment());
 
         $columnOptions->protectedSetter();
-        $this->assertContains('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedSetter', $dbalColumn->getComment());
+        $this->assertStringContainsString('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedSetter', $dbalColumn->getComment());
 
         $columnOptions->protectedOneToMany();
-        $this->assertContains('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedOneToMany', $dbalColumn->getComment());
+        $this->assertStringContainsString('@TheCodingMachine\\TDBM\\Utils\\Annotation\\ProtectedOneToMany', $dbalColumn->getComment());
 
         $this->assertSame($posts, $columnOptions->then());
 
@@ -74,7 +73,7 @@ class TdbmFluidColumnOptionsTest extends TestCase
 
         $posts->column('id')->integer()->primaryKey('pkname');
 
-        $this->assertTrue($schema->getTable('posts')->hasPrimaryKey());
+        $this->assertNotNull($schema->getTable('posts')->getPrimaryKey());
         $this->assertTrue($schema->getTable('posts')->hasIndex('pkname'));
     }
 }

@@ -4,6 +4,7 @@ namespace TheCodingMachine\FluidSchema;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use PHPUnit\Framework\TestCase;
 
 class TdbmFluidTableTest extends TestCase
@@ -33,7 +34,7 @@ class TdbmFluidTableTest extends TestCase
 
         $posts->column('foo')->integer();
 
-        $this->assertSame(Type::getType(Type::INTEGER), $schema->getTable('posts')->getColumn('foo')->getType());
+        $this->assertSame(Type::getType(Types::INTEGER), $schema->getTable('posts')->getColumn('foo')->getType());
     }
 
     public function testIndex()
@@ -69,7 +70,7 @@ class TdbmFluidTableTest extends TestCase
 
         $posts->column('id')->integer()->then()->primaryKey(['id'], 'pkname');
 
-        $this->assertTrue($schema->getTable('posts')->hasPrimaryKey());
+        $this->assertNotNull($schema->getTable('posts')->getPrimaryKey());
         $this->assertTrue($schema->getTable('posts')->hasIndex('pkname'));
     }
 
@@ -82,7 +83,7 @@ class TdbmFluidTableTest extends TestCase
 
         $posts->id();
 
-        $this->assertTrue($schema->getTable('posts')->hasPrimaryKey());
+        $this->assertNotNull($schema->getTable('posts')->getPrimaryKey());
         $this->assertTrue($schema->getTable('posts')->hasColumn('id'));
     }
 
@@ -95,7 +96,7 @@ class TdbmFluidTableTest extends TestCase
 
         $posts->uuid();
 
-        $this->assertTrue($schema->getTable('posts')->hasPrimaryKey());
+        $this->assertNotNull($schema->getTable('posts')->getPrimaryKey());
         $this->assertTrue($schema->getTable('posts')->hasColumn('uuid'));
         $this->assertSame("\n@UUID(\"v4\")", $schema->getTable('posts')->getColumn('uuid')->getComment());
     }
@@ -175,19 +176,15 @@ class TdbmFluidTableTest extends TestCase
 
     public function testTimestamps()
     {
-        if (defined('Doctrine\\DBAL\\Types\\Type::DATE_IMMUTABLE')) {
-            $schema = new Schema();
-            $fluid = new TdbmFluidSchema($schema);
+        $schema = new Schema();
+        $fluid = new TdbmFluidSchema($schema);
 
-            $posts = $fluid->table('posts');
+        $posts = $fluid->table('posts');
 
-            $posts->timestamps();
+        $posts->timestamps();
 
-            $this->assertTrue($schema->getTable('posts')->hasColumn('created_at'));
-            $this->assertTrue($schema->getTable('posts')->hasColumn('updated_at'));
-        } else {
-            $this->markTestSkipped("Only available from Doctrine DBAL 2.6");
-        }
+        $this->assertTrue($schema->getTable('posts')->hasColumn('created_at'));
+        $this->assertTrue($schema->getTable('posts')->hasColumn('updated_at'));
     }
 
     public function testInherits()
@@ -202,7 +199,7 @@ class TdbmFluidTableTest extends TestCase
 
         $dbalColumn = $schema->getTable('users')->getColumn('id');
 
-        $this->assertSame(Type::getType(Type::INTEGER), $dbalColumn->getType());
+        $this->assertSame(Type::getType(Types::INTEGER), $dbalColumn->getType());
         $fks = $schema->getTable('users')->getForeignKeys();
         $this->assertCount(1, $fks);
         $fk = array_pop($fks);

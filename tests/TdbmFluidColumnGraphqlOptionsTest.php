@@ -3,7 +3,6 @@
 namespace TheCodingMachine\FluidSchema;
 
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase;
 
 class TdbmFluidColumnGraphqlOptionsTest extends TestCase
@@ -43,19 +42,19 @@ class TdbmFluidColumnGraphqlOptionsTest extends TestCase
         $column2 = $graphqlOptions->column('foo');
         $this->assertSame($column2, $column);
 
-        $this->assertContains('@TheCodingMachine\GraphQLite\Annotations\Type', $schema->getTable('posts')->getOptions()['comment']);
+        $this->assertStringContainsString('@TheCodingMachine\GraphQLite\Annotations\Type', $schema->getTable('posts')->getOptions()['comment']);
 
         $idColumn = $posts->id()->graphqlField();
-        $this->assertContains('outputType = "ID"', $schema->getTable('posts')->getColumn('id')->getComment());
+        $this->assertStringContainsString('outputType = "ID"', $schema->getTable('posts')->getColumn('id')->getComment());
 
         $users = $fluid->table('users');
         $uuidColumn = $users->uuid()->graphqlField();
-        $this->assertContains('outputType = "ID"', $schema->getTable('users')->getColumn('uuid')->getComment());
+        $this->assertStringContainsString('outputType = "ID"', $schema->getTable('users')->getColumn('uuid')->getComment());
 
         $products = $fluid->table('products');
         $graphqlField = $products->uuid()
             ->column('user_id')->references('users')->graphqlField();
-        $this->assertNotContains('outputType = "ID"', $schema->getTable('products')->getColumn('user_id')->getComment());
+        $this->assertStringNotContainsString('outputType = "ID"', $schema->getTable('products')->getColumn('user_id')->getComment());
 
         $this->assertSame('products', $graphqlField->then()->getDbalTable()->getName());
     }

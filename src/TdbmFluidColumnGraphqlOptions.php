@@ -6,6 +6,8 @@ namespace TheCodingMachine\FluidSchema;
 
 use function addslashes;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
+
 use function var_export;
 
 class TdbmFluidColumnGraphqlOptions
@@ -62,7 +64,7 @@ class TdbmFluidColumnGraphqlOptions
         $outputType = null;
         if ($this->outputType !== null) {
             $outputType = $this->outputType;
-        } elseif ($this->fluidColumn->getDbalColumn()->getType() === Type::getType(Type::GUID)) {
+        } elseif ($this->fluidColumn->getDbalColumn()->getType() === Type::getType(Types::GUID)) {
             // are we part of a foreign key or not?
             $fks = $this->tdbmFluidColumnOptions->then()->getDbalTable()->getForeignKeys();
             $isPartOfFk = false;
